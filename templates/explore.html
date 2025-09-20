@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Handicrafts - Craft Chain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../static/style1.css">
+</head>
+<body>
+  <!-- Header -->
+ <!-- Header -->
+<header>
+  <h1>CRAFT CHAIN</h1>
+<nav>
+  <a href="#">Home</a>
+  <a href="#our-story">About</a> <!-- 👈 Smooth scroll to Our Story -->
+  <a href="#">Contact</a>
+  <a href="login.html" class="login-btn">Login</a>
+</nav>
+</header>
+
+
+  <!-- Explore Hero -->
+  <section class="explore-hero">
+    <h2 class="fade-text">Explore Our<br> Handicraft<br> Collections</h2>
+    <p class="fade-text">Timeless artistry meets modern design. Discover the craft heritage of India.</p>
+  </section>
+
+  <!-- Handicraft Sections -->
+  <section class="handicrafts">
+    <h3>Check this out !!</h3>
+
+    <!-- Pots -->
+    <div class="handicraft-card">
+      <img src="../pics/pottery.jpg" alt="Pots">
+      <div class="handicraft-info">
+        <h4><a href="pots.html">Pots & Terracotta</a></h4>
+        <p>Clay pots and terracotta crafts that celebrate India’s earthy traditions.</p>
+      </div>
+    </div>
+    
+    <!-- Wooden Crafts -->
+    <div class="handicraft-card">
+      <img src="../pics/wodden.jpg" alt="Wooden Crafts">
+      <div class="handicraft-info">
+        <h4><a href="wood.html">Wooden Crafts</a></h4>
+        <p>Intricately carved wooden pieces blending tradition with utility.</p>
+      </div>
+    </div>
+
+    <!-- Metal Work -->
+    <div class="handicraft-card">
+      <img src="../pics/metal.jpg" alt="Metal Work">
+      <div class="handicraft-info">
+        <h4><a href="metal.html">Metal Work</a></h4>
+        <p>Handmade brass, copper, and silver crafts that shine with heritage.</p>
+      </div>
+    </div>
+  </section>
+
+   <!-- Our Story -->
+  <section class="story" id="our-story">
+    <h3>Our Story</h3>
+    <div class="story-content">
+      <div class="story-left">
+        <p>
+          Craft Chain was founded with a mission to preserve traditional crafting techniques while supporting local artisans. Each piece in our<br> collection is thoughtfully created by skilled craftspeople who pour their expertise and passion into every detail.
+We believe in the<br> beauty of handmade objects - their imperfections tell a story and add character that mass-produced items simply cannot replicate 
+</p>
+      </div>
+      <div class="story-divider"></div>
+      <div class="story-right">
+        <p>
+            From ceramics to textiles, each piece is made with sustainable materials and ethical practices
+When you purchase from Craft Chain,<br> you're not just buying a beautiful object - you're supporting traditional crafts and the talented people who keep these art forms alive
+</p>
+         
+        <button>Learn More</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+ <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <h4>Contact Us</h4>
+        <div class="contact-info">
+          <p class="email">📧 info@craftchain.com</p>
+          <p class="address">📍 Bangalore, India</p>
+        </div>
+        <p class="copyright">© 2025 Craft Chain | Handcrafted Shoes</p>
+      </div>
+      <div class="footer-right">
+        <h4>Connect with Us</h4>
+          <div class="social-links">
+            <a href="#" class="social-link instagram" title="Instagram">
+              <img src="../logos/—Pngtree—instagram white icon instagram instagram_3570419.png " alt="Instagram">
+            </a>
+            <a href="#" class="social-link facebook" title="Facebook">
+              <img src="../logos/facebook.png" alt="Facebook">
+            </a>
+            <a href="#" class="social-link twitter" title="Twitter">𝕏</a>
+            <a href="#" class="social-link whatsapp" title="WhatsApp">
+              <img src="../logos/—Pngtree—white whatsapp icon png_3562063.png " alt="WhatsApp">
+            </a>
+          </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+
+
+  <!-- Script for Fade-in -->
+  <script>
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.fade-text').forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, index * 400); // stagger effect
+      });
+    });
+  </script>
+</body>
+</html>

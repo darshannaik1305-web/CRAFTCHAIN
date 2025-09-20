@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Craft Chain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Basic reset and styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+ body {
+  font-family: 'Inter', sans-serif;
+  color: #2a2a2a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  position: relative;
+  background: url("../pics/PIC4.jpg") no-repeat center center/cover;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Overlay transparency */
+  z-index: 0;
+}
+
+.login-container {
+  position: relative; /* so it's above overlay */
+  z-index: 1;
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #5b3c33;
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #5b3c33;
+    }
+    select, input[type="email"], input[type="password"] {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+    select:focus, input[type="email"]:focus, input[type="password"]:focus {
+      border-color: #5b3c33;
+      outline: none;
+    }
+    button {
+      background-color: #5b3c33;
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #3e2a22;
+    }
+    .register-link {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .register-link a {
+      color: #5b3c33;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    .register-link a:hover {
+      color: #3e2a22;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+    
+  <div class="login-container">
+    <h2>Login to Craft Chain</h2>
+    <form id="loginForm" action="#" method="POST">
+      <label for="role">Select Role</label>
+      <select id="role" name="role" required>
+        <option value="" disabled selected>Choose your role</option>
+        <option value="buyer">Buyer</option>
+        <option value="seller">Seller</option>
+      </select>
+
+      <label for="email">Gmail</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+
+      <button type="submit">Submit</button>
+    </form>
+    <div class="register-link">
+      <p>New here? <a href="register.html">New Registration</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent default form submission
+      
+      const role = document.getElementById('role').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      // Basic validation
+      if (!role || !email || !password) {
+        alert('Please fill in all fields');
+        return;
+      }
+      
+      // Simulate login process (in a real app, this would be an API call)
+      // For now, we'll just redirect based on role
+      if (role === 'seller') {
+        // Store user info in localStorage for the seller dashboard
+        localStorage.setItem('userRole', 'seller');
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        // Redirect to seller dashboard
+        window.location.href = '../backend/seller.html';
+      } else if (role === 'buyer') {
+        // Store user info in localStorage
+        localStorage.setItem('userRole', 'buyer');
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        // Redirect to explore page for buyers
+        window.location.href = 'explore.html';
+      }
+    });
+  </script>
+</body>
+</html>

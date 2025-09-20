@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Registration - Craft Chain</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fdfdfb;
+      color: #2a2a2a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      padding: 2rem 3rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #5b3c33;
+      text-align: center;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #eee;
+    }
+    .tab {
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #5b3c33;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.3s ease;
+      user-select: none;
+    }
+    .tab.active {
+      border-color: #5b3c33;
+      color: #000;
+    }
+
+    form {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    form.active {
+      display: flex;
+    }
+
+    label {
+      font-weight: 600;
+      color: #5b3c33;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.3s ease;
+      resize: vertical;
+    }
+    input[type="file"] {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="password"]:focus,
+    textarea:focus {
+      border-color: #5b3c33;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 60px;
+    }
+
+    button {
+      background-color: #5b3c33;
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+    }
+    button:hover {
+      background-color: #3e2a22;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem 1.5rem;
+      }
+      .tab {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>New Registration</h2>
+    <div class="tabs">
+      <div class="tab active" data-target="buyer-form">Buyer</div>
+      <div class="tab" data-target="seller-form">Seller</div>
+    </div>
+
+    <!-- Buyer Registration Form -->
+    <form id="buyer-form" class="active" action="#" method="POST" enctype="multipart/form-data" novalidate>
+      <label for="buyer-fullname">Full Name</label>
+      <input type="text" id="buyer-fullname" name="fullname" placeholder="Your full name" required />
+
+      <label for="buyer-email">Email</label>
+      <input type="email" id="buyer-email" name="email" placeholder="abc@gmail.com" required />
+
+      <label for="buyer-phone">Phone Number</label>
+      <input type="tel" id="buyer-phone" name="phone" placeholder="+91" pattern="[0-9+ ]{7,15}" required />
+
+      <label for="buyer-address">Address</label>
+      <textarea id="buyer-address" name="address" placeholder="Your address" required></textarea>
+
+      <label for="buyer-password">Password</label>
+      <input type="password" id="buyer-password" name="password" placeholder="Enter password" required minlength="6" />
+
+      <label for="buyer-confirm-password">Confirm Password</label>
+      <input type="password" id="buyer-confirm-password" name="confirm_password" placeholder="Confirm password" required minlength="6" />
+
+      <button type="submit">Register as Buyer</button>
+    </form>
+
+    <!-- Seller Registration Form -->
+    <form id="seller-form" action="#" method="POST" enctype="multipart/form-data" novalidate>
+      <label for="seller-fullname">Full Name</label>
+      <input type="text" id="seller-fullname" name="fullname" placeholder="Your full name" required />
+
+      <label for="seller-email">Email</label>
+      <input type="email" id="seller-email" name="email" placeholder="abc@gmail.com" required />
+
+      <label for="seller-phone">Phone Number</label>
+      <input type="tel" id="seller-phone" name="phone" placeholder="+91" pattern="[0-9+ ]{7,15}" required />
+
+      <label for="seller-address">Address + Location</label>
+      <textarea id="seller-address" name="address_location" placeholder="Your address and location" required></textarea>
+
+      <label for="govt-id">Government ID / Artisan ID Upload</label>
+      <input type="file" id="govt-id" name="govt_id" accept=".jpg,.jpeg,.png,.pdf" required />
+
+
+      <label for="payment-details">Bank / Wallet Details for Payment</label>
+      <textarea id="payment-details" name="payment_details" placeholder="Bank account or wallet details" required></textarea>
+
+      <label for="seller-password">Password</label>
+      <input type="password" id="seller-password" name="password" placeholder="Enter password" required minlength="6" />
+
+      <label for="seller-confirm-password">Confirm Password</label>
+      <input type="password" id="seller-confirm-password" name="confirm_password" placeholder="Confirm password" required minlength="6" />
+
+      <button type="submit">Register as Seller</button>
+    </form>
+  </div>
+
+  <script>
+    // Tab switching logic
+    const tabs = document.querySelectorAll('.tab');
+    const forms = document.querySelectorAll('form');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and forms
+        tabs.forEach(t => t.classList.remove('active'));
+        forms.forEach(f => f.classList.remove('active'));
+
+        // Add active class to clicked tab and corresponding form
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    // Optional: Password confirmation validation
+    function validatePasswordMatch(form) {
+      const password = form.querySelector('input[name="password"]');
+      const confirmPassword = form.querySelector('input[name="confirm_password"]');
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setCustomValidity("Passwords do not match");
+      } else {
+        confirmPassword.setCustomValidity("");
+      }
+    }
+
+    document.getElementById('buyer-form').addEventListener('input', function() {
+      validatePasswordMatch(this);
+    });
+
+    document.getElementById('seller-form').addEventListener('input', function() {
+      validatePasswordMatch(this);
+    });
+
+    // Handle form submissions
+    document.getElementById('buyer-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirm_password');
+      
+      // Validate password match
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      
+      // Store user info in localStorage
+      localStorage.setItem('userRole', 'buyer');
+      localStorage.setItem('userEmail', formData.get('email'));
+      localStorage.setItem('userName', formData.get('fullname'));
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      alert('Registration successful! Welcome to Craft Chain.');
+      // Redirect to explore page for buyers
+      window.location.href = 'explore.html';
+    });
+
+    document.getElementById('seller-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirm_password');
+      
+      // Validate password match
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+      
+      // Check if government ID file is uploaded
+      const govtId = formData.get('govt_id');
+      if (!govtId || govtId.size === 0) {
+        alert('Please upload your Government ID / Artisan ID');
+        return;
+      }
+      
+      // Store user info in localStorage
+      localStorage.setItem('userRole', 'seller');
+      localStorage.setItem('userEmail', formData.get('email'));
+      localStorage.setItem('userName', formData.get('fullname'));
+      localStorage.setItem('userPhone', formData.get('phone'));
+      localStorage.setItem('userAddress', formData.get('address_location'));
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      alert('Seller registration successful! Welcome to Craft Chain. You can now add your products.');
+      // Redirect to seller dashboard
+      window.location.href = '../backend/seller.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  background-color: #fdfdfb;
+  color: #2a2a2a;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 5%;
+  background-color: #fdfdfb;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Login Button in Navbar */
+nav .login-btn {
+  padding: 0.4rem 1rem;
+  background-color: #5b3c33;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+nav .login-btn:hover {
+  background-color: #000;
+  transform: translateY(-2px);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+nav a {
+  margin: 0 1rem;
+  text-decoration: none;
+  font-weight: 500;
+  color: #5b3c33;
+}
+
+/* Hero Section */
+.explore-hero {
+  position: relative;
+  background: url('../pics/PIC3.jpg') no-repeat center center/cover;
+  text-align: left;
+  padding: 8rem 5%;
+  color: #fff;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Overlay for transparency */
+.explore-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* 👈 adjust transparency here */
+  z-index: 0;
+}
+
+/* Keep text above overlay */
+.explore-hero h2,
+.explore-hero p {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero Text Animation */
+.fade-text {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.explore-hero h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 6rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  text-shadow: 2px;
+  text-shadow: #000000;
+}
+
+.explore-hero p {
+  font-size: 1.3rem;
+}
+
+/* Handicrafts */
+.handicrafts {
+  padding: 4rem 5%;
+  background: #fdfdfb;
+}
+
+.handicrafts h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+/* Handicraft Cards - vertical */
+.handicraft-card {
+  display: flex;
+  flex-direction: column; /* vertical stack */
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 2rem;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.handicraft-card img {
+ 
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.handicraft-info h4 a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  color: #5b3c33;
+  transition: color 0.3s ease;
+}
+
+.handicraft-info h4 a:hover {
+  color: #000;
+}
+
+.handicraft-info p {
+  font-size: 1rem;
+  color: #555;
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+
+.handicraft-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: #5b3c33;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background-color: #fffdf8;
+}
+/*story*/
+.story {
+  display: flex;
+  flex-direction: column;
+  padding:3rem 5%;
+  background-color: #ffe5d4; /* 👈 peach background */
+  border-radius: 12px;       /* optional: rounded corners */
+  margin: 3rem 5%;           /* optional: spacing around */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* optional: card effect */
+}
+
+
+.story h3 {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 3rem;
+  color: #000;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  font-weight: 60;
+}
+
+.story-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.story-left {
+  width: 100%;
+}
+
+.story-divider {
+  width: 90%;
+  height: 2px;
+  background-color: #000;
+  margin: 0.5rem auto;
+  border: none;
+  display: block;
+  clear: both;
+}
+
+.story-right {
+  width: 100%;
+  text-align: center;
+  margin-left: 10%;
+  padding-left: 2rem;
+}
+
+.story p {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.story button {
+  text-align: right;
+  padding: 0.8rem 2rem;
+  border: 1px solid #5b3c33;
+  background: transparent;
+  color: #5b3c33;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 1rem;
+}
+
+.story button:hover {
+  background: #5b3c33;
+  color: #fff;
+}
+
+/*footer*/
+footer {
+  background: #2c2c2c;
+  color: #eee;
+  padding: 1rem 3%;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-right: 5%;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-left h4 {
+  color: #f2d3cf;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-align: left;
+  margin: 0 0 1rem 0;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-info p {
+  color: #ccc;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.copyright {
+  color: #999;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.footer-right h4 {
+  color: #f2d3cf;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-align: right;
+  margin: 0 0 1rem 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+  margin-right: -2rem;
+  margin-top: 2.5rem;;
+}
+
+.social-link {
+  display: inline-block;
+  padding: 0.6rem;
+  background: #444;
+  color: #eee;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: all 0.3s;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-link img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.social-link:hover {
+  background: #f2d3cf;
+  color: #2c2c2c;
+  transform: translateY(-2px);
+}
+
+.social-link.instagram:hover {
+  background: #ff0000;
+  color: white;
+}
+
+.social-link.facebook:hover {
+  background: #1877F2;
+  color: white;
+}
+
+.social-link.twitter:hover {
+  background: #64bdf4;
+  color: white;
+}
+
+.social-link.whatsapp:hover {
+  background: #25D366;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .footer-right h4 {
+    text-align: center;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .explore-hero h2 {
+    font-size: 3rem;
+  }
+
+  .handicraft-card {
+    padding: 1.5rem;
+  }
+}
