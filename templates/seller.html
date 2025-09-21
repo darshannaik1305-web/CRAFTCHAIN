@@ -114,20 +114,50 @@
       margin-bottom: 1rem;
       display: none;
     }
+
+    /* My Products cards (to prevent oversized images) */
+    #myProducts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .handicraft-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.75rem;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 1rem;
+      background: #fff;
+    }
+    .handicraft-card img {
+      width: 100%;
+      max-width: 200px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    @media (max-width: 480px) {
+      .handicraft-card img { max-width: 160px; height: 120px; }
+    }
   </style>
 </head>
 <body>
+  <script src="../static/config.js"></script>
   <header>
     <h1>Seller Dashboard</h1>
     <div class="user-info">
       <span id="welcomeMessage">Welcome, Seller!</span>
-      <a href="../templates/login.html" class="logout-btn" onclick="logout()">Logout</a>
+      <a href="login.html" class="logout-btn" onclick="logout()">Logout</a>
     </div>
   </header>
 
   <div class="container">
     <div class="success-message" id="successMessage">
-      Product added successfully! Your product is now available on Craft Chain.
+      Product submitted successfully and is pending approval by admin.
     </div>
     
     <h2>Add New Product</h2>
@@ -142,6 +172,14 @@
       <label for="product-price">Price (₹)</label>
       <input type="number" id="product-price" name="price" placeholder="Enter product price" min="1" required>
 
+      <label for="product-category">Category</label>
+      <select id="product-category" name="category" required>
+        <option value="" disabled selected>Select a category</option>
+        <option value="pots">Pots & Terracotta</option>
+        <option value="wood">Wooden Crafts</option>
+        <option value="metal">Metal Work</option>
+      </select>
+
       <label for="product-description">Description</label>
       <textarea id="product-description" name="description" placeholder="Enter product description" required></textarea>
 
@@ -150,6 +188,9 @@
 
       <button type="submit">Add Product</button>
     </form>
+    <hr style="margin: 2rem 0;">
+    <h2>My Products</h2>
+    <div id="myProducts"></div>
   </div>
 
   <script>
@@ -159,7 +200,7 @@
       const userRole = localStorage.getItem('userRole');
       if (!isLoggedIn || userRole !== 'seller') {
         alert('Access denied. Please login as a seller.');
-        window.location.href = '../templates/login.html';
+        window.location.href = 'login.html';
         return false;
       }
       return true;
@@ -180,8 +221,86 @@
     window.addEventListener('load', function () {
       if (checkAuth()) {
         loadUserInfo();
+        loadMyProducts();
       }
     });
+
+    // Handle product submission to backend with seller_email from localStorage
+    const productForm = document.getElementById('productForm');
+    productForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const sellerEmail = localStorage.getItem('userEmail');
+      if (!sellerEmail) {
+        alert('Missing seller email. Please login again.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const formData = new FormData(productForm);
+      // Ensure the backend receives seller_email
+      formData.append('seller_email', sellerEmail);
+      // Ensure backend receives category (already present from select's name)
+      const cat = document.getElementById('product-category').value;
+      if (!cat) { alert('Please choose a category'); return; }
+      formData.set('category', cat);
+
+      try {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to add product');
+
+        // Show success and reset form
+        const msg = document.getElementById('successMessage');
+        msg.style.display = 'block';
+        productForm.reset();
+        // Refill seller name from localStorage
+        const sellerNameInput = document.getElementById('seller-name');
+        sellerNameInput.value = localStorage.getItem('userName') || '';
+        // Hide message after a short delay
+        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        // Reload my products list
+        loadMyProducts();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    async function loadMyProducts() {
+      const email = localStorage.getItem('userEmail');
+      if (!email) return;
+      try {
+        const res = await fetch(`/api/my-products?seller_email=${encodeURIComponent(email)}`);
+        const items = await res.json();
+        const container = document.getElementById('myProducts');
+        container.innerHTML = '';
+        if (!Array.isArray(items) || items.length === 0) {
+          container.innerHTML = '<p>You have not added any products yet.</p>';
+          return;
+        }
+        const host = '';
+        for (const p of items) {
+          const card = document.createElement('div');
+          card.className = 'handicraft-card';
+          const imgUrl = p.image_url.startsWith('http') ? p.image_url : host + p.image_url;
+          const statusText = p.status === 'pending' ? 'Pending approval' : p.status === 'approved' ? 'Approved' : 'Rejected';
+          card.innerHTML = `
+            <img src="${imgUrl}" alt="${p.name}">
+            <div class="handicraft-info">
+              <h4>${p.name} <small style="font-size:0.9rem;color:#666;">(${statusText})</small></h4>
+              <p>${p.description}</p>
+              <p><strong>₹${p.price}</strong></p>
+            </div>
+          `;
+          container.appendChild(card);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
   </script>
   </body>
   </html>

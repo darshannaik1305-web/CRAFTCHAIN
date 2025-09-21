@@ -6,6 +6,7 @@
   <title>Explore Handicrafts - Craft Chain</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../static/style1.css">
+  <script src="../static/config.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -16,7 +17,7 @@
   <a href="#">Home</a>
   <a href="#our-story">About</a> <!-- 👈 Smooth scroll to Our Story -->
   <a href="#">Contact</a>
-  <a href="login.html" class="login-btn">Login</a>
+  <a href="/login" class="login-btn">Login</a>
 </nav>
 </header>
 
@@ -109,9 +110,18 @@ When you purchase from Craft Chain,<br> you're not just buying a beautiful objec
       </div>
     </div>
   </footer>
-</body>
-</html>
+  <!-- Script for Fade-in -->
+  <script>
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.fade-text').forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, index * 400); // stagger effect
+      });
+    });
+  </script>
 
+<!-- Products are intentionally not auto-listed on Explore. Use category pages instead. -->
 
   <!-- Script for Fade-in -->
   <script>
@@ -123,5 +133,6 @@ When you purchase from Craft Chain,<br> you're not just buying a beautiful objec
       });
     });
   </script>
+
 </body>
 </html>

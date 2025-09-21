@@ -108,6 +108,7 @@ body::before {
   </style>
 </head>
 <body>
+  <script src="/static/config.js"></script>
     
   <div class="login-container">
     <h2>Login to Craft Chain</h2>
@@ -128,12 +129,12 @@ body::before {
       <button type="submit">Submit</button>
     </form>
     <div class="register-link">
-      <p>New here? <a href="register.html">New Registration</a></p>
+      <p>New here? <a href="/register">New Registration</a></p>
     </div>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault(); // Prevent default form submission
       
       const role = document.getElementById('role').value;
@@ -146,24 +147,38 @@ body::before {
         return;
       }
       
-      // Simulate login process (in a real app, this would be an API call)
-      // For now, we'll just redirect based on role
-      if (role === 'seller') {
-        // Store user info in localStorage for the seller dashboard
-        localStorage.setItem('userRole', 'seller');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // Redirect to seller dashboard
-        window.location.href = '../backend/seller.html';
-      } else if (role === 'buyer') {
+      try {
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('role', role);
+
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        const user = data.user;
         // Store user info in localStorage
-        localStorage.setItem('userRole', 'buyer');
-        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', user.role);
+        localStorage.setItem('userEmail', user.email);
+        localStorage.setItem('userName', user.fullname || '');
+        localStorage.setItem('userId', String(user.id));
         localStorage.setItem('isLoggedIn', 'true');
-        
-        // Redirect to explore page for buyers
-        window.location.href = 'explore.html';
+
+        // Redirect based on role
+        if (user.role === 'seller') {
+          window.location.href = '/seller';
+        } else {
+          window.location.href = '/explore';
+        }
+      } catch (err) {
+        alert(err.message);
       }
     });
   </script>

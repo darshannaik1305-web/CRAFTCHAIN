@@ -136,6 +136,7 @@
   </style>
 </head>
 <body>
+  <script src="/static/config.js"></script>
   <div class="container">
     <h2>New Registration</h2>
     <div class="tabs">
@@ -235,7 +236,7 @@
     });
 
     // Handle form submissions
-    document.getElementById('buyer-form').addEventListener('submit', function(e) {
+    document.getElementById('buyer-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const formData = new FormData(this);
@@ -248,18 +249,29 @@
         return;
       }
       
-      // Store user info in localStorage
-      localStorage.setItem('userRole', 'buyer');
-      localStorage.setItem('userEmail', formData.get('email'));
-      localStorage.setItem('userName', formData.get('fullname'));
-      localStorage.setItem('isLoggedIn', 'true');
-      
-      alert('Registration successful! Welcome to Craft Chain.');
-      // Redirect to explore page for buyers
-      window.location.href = 'explore.html';
+      try {
+        const res = await fetch('/api/register/buyer', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        // Store user info in localStorage
+        localStorage.setItem('userRole', 'buyer');
+        localStorage.setItem('userEmail', formData.get('email'));
+        localStorage.setItem('userName', formData.get('fullname'));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        alert('Registration successful! Welcome to Craft Chain.');
+        // Redirect buyers to login page
+        window.location.href = '/login';
+      } catch (err) {
+        alert(err.message);
+      }
     });
 
-    document.getElementById('seller-form').addEventListener('submit', function(e) {
+    document.getElementById('seller-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const formData = new FormData(this);
@@ -279,17 +291,28 @@
         return;
       }
       
-      // Store user info in localStorage
-      localStorage.setItem('userRole', 'seller');
-      localStorage.setItem('userEmail', formData.get('email'));
-      localStorage.setItem('userName', formData.get('fullname'));
-      localStorage.setItem('userPhone', formData.get('phone'));
-      localStorage.setItem('userAddress', formData.get('address_location'));
-      localStorage.setItem('isLoggedIn', 'true');
-      
-      alert('Seller registration successful! Welcome to Craft Chain. You can now add your products.');
-      // Redirect to seller dashboard
-      window.location.href = '../backend/seller.html';
+      try {
+        const res = await fetch('/api/register/seller', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        // Store user info in localStorage
+        localStorage.setItem('userRole', 'seller');
+        localStorage.setItem('userEmail', formData.get('email'));
+        localStorage.setItem('userName', formData.get('fullname'));
+        localStorage.setItem('userPhone', formData.get('phone'));
+        localStorage.setItem('userAddress', formData.get('address_location'));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        alert('Seller registration successful! Welcome to Craft Chain. You can now add your products.');
+        // Redirect sellers to login page
+        window.location.href = '/login';
+      } catch (err) {
+        alert(err.message);
+      }
     });
   </script>
 </body>
