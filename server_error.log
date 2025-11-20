@@ -35,3 +35,5 @@ C:\Users\darsh\OneDrive\Desktop\CRAFTCHAIN\backend\app.py:514: LegacyAPIWarning:
 127.0.0.1 - - [20/Nov/2025 17:44:17] "GET / HTTP/1.1" 200 -
 127.0.0.1 - - [20/Nov/2025 17:44:47] "GET / HTTP/1.1" 200 -
 127.0.0.1 - - [20/Nov/2025 17:45:17] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [20/Nov/2025 17:45:47] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [20/Nov/2025 17:46:17] "GET / HTTP/1.1" 200 -
