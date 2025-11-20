@@ -12,8 +12,11 @@ A modern e-commerce platform dedicated to connecting artisans with buyers worldw
 ### 🛍️ Product Management
 - **Categories**: Pots, Wood crafts, Metal works
 - **Product Upload**: Sellers can upload product images with descriptions
+- **Product Editing**: Sellers can edit product details (name, price, description, category, image)
+- **Product Deletion**: Sellers can delete their products permanently
 - **Approval System**: Admin approval ensures quality control
 - **Status Tracking**: Pending, Approved, or Rejected products
+- **Real-time Updates**: Products automatically reset to 'pending' when edited
 
 ### 🔐 Authentication & Security
 - Secure user registration and login
@@ -26,6 +29,8 @@ A modern e-commerce platform dedicated to connecting artisans with buyers worldw
 - Beautiful product galleries
 - Intuitive navigation
 - Real-time status updates
+- Scrollable edit modals for better user experience
+- Interactive product management interface
 
 ## 🚀 Quick Start
 
@@ -108,6 +113,9 @@ CRAFTCHAIN/
 - Uses SQLite for simplicity and reliability
 - Automatic database initialization on first run
 - Optimized for concurrent access with WAL mode
+- **Real-time Database Sync**: Application and external database tools use the same database file
+- **Database Location**: `app.db` in project root (configurable via `database_path.txt`)
+- **Database Viewer**: Use `view_database.py` to inspect database contents
 
 ### File Uploads
 - **Government IDs**: Stored in `static/uploads/govt_ids/`
@@ -134,6 +142,12 @@ python -m flask init-db
 
 # Create admin user
 python -m flask create-admin
+
+# View database contents
+python view_database.py
+
+# Create clean database (if needed)
+python create_clean_database.py
 ```
 
 ### Environment Variables
@@ -144,6 +158,25 @@ set PORT=5002
 # Secret key (auto-generated for development)
 set SECRET_KEY=your-secret-key
 ```
+
+## 📱 Seller Dashboard
+
+The seller dashboard provides comprehensive product management capabilities:
+
+### Features
+- **Add New Products**: Upload images, set prices, descriptions, and categories
+- **Edit Existing Products**: Modify product details with a user-friendly modal interface
+- **Delete Products**: Remove products with confirmation dialog
+- **Status Tracking**: View product approval status (Pending/Approved/Rejected)
+- **Real-time Updates**: Changes sync immediately with the database
+
+### How to Use
+1. Login as a seller at `/login`
+2. Navigate to seller dashboard at `/seller`
+3. Use the "Add New Product" form to create products
+4. Click "Edit" on any product to modify details
+5. Click "Delete" to remove products permanently
+6. All changes are saved instantly and reflected across the platform
 
 ## 🔍 API Endpoints
 
@@ -156,7 +189,10 @@ set SECRET_KEY=your-secret-key
 - `GET /api/products` - List all products
 - `POST /api/products` - Create new product (seller only)
 - `GET /api/products/<id>` - Get product details
+- `PUT /api/products/<id>` - Update product (seller only)
+- `DELETE /api/products/<id>` - Delete product (seller only)
 - `PATCH /api/products/<id>/status` - Update product status (admin only)
+- `GET /api/my-products` - Get seller's products (seller only)
 
 ### Users
 - `GET /api/users` - List all users (admin only)
@@ -200,6 +236,26 @@ If you encounter "database is locked" errors:
 - Check file size (max 16MB)
 - Verify file format (JPG, PNG, PDF)
 - Ensure upload directories exist
+
+### Database Synchronization
+
+**Real-time Sync between Application and External Tools:**
+- The application uses `app.db` in the project root
+- Changes made through the website are immediately visible in SQLite DB Browser
+- Changes made in SQLite DB Browser are immediately reflected on the website
+- Database location is configured via `database_path.txt`
+
+**Using SQLite DB Browser:**
+1. Open SQLite DB Browser application
+2. Load the database file: `C:\Users\darsh\OneDrive\Desktop\CRAFTCHAIN\app.db`
+3. View/Edit tables: Users, Products
+4. Changes are saved automatically and sync with the web application
+
+**Database Viewer Tool:**
+```bash
+# View current database contents
+python view_database.py
+```
 
 ## 🤝 Contributing
 

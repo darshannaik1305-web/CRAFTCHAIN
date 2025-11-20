@@ -497,11 +497,123 @@ def my_products():
             'price': p.price,
             'description': p.description,
             'image_url': p.image_path,
+            'category': p.category,
             'status': p.status,
             'created_at': p.created_at.isoformat()
         }
         for p in products
     ])
+
+
+@app.put('/api/products/<int:product_id>')
+def update_product(product_id: int):
+    """Update product details (seller only)."""
+    data = request.form or {}
+    
+    # Get product
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+    
+    # Verify seller ownership
+    seller_email = data.get('seller_email')
+    if not seller_email:
+        return jsonify({'error': 'seller_email is required'}), 400
+    
+    user = User.query.filter_by(email=seller_email, role='seller').first()
+    if not user or product.seller_id != user.id:
+        return jsonify({'error': 'You can only update your own products'}), 403
+    
+    # Update fields
+    if 'product_name' in data and data['product_name'].strip():
+        product.name = data['product_name'].strip()
+    
+    if 'price' in data:
+        try:
+            price = float(data['price'])
+            if price <= 0:
+                return jsonify({'error': 'Price must be greater than 0'}), 400
+            product.price = price
+        except ValueError:
+            return jsonify({'error': 'Invalid price'}), 400
+    
+    if 'description' in data and data['description'].strip():
+        product.description = data['description'].strip()
+    
+    if 'category' in data and data['category'].strip():
+        normalized_category = data['category'].strip().lower()
+        allowed_categories = {'pots', 'wood', 'metal'}
+        if normalized_category not in allowed_categories:
+            return jsonify({'error': 'Invalid category. Must be one of pots, wood, metal'}), 400
+        product.category = normalized_category
+    
+    # Handle image update if provided
+    if 'product_image' in request.files and request.files['product_image'].filename:
+        try:
+            image_path = save_file(request.files['product_image'], PRODUCT_UPLOAD_DIR)
+            product.image_path = image_path
+        except Exception as e:
+            return jsonify({'error': f'Image upload failed: {e}'}), 400
+    
+    # Reset status to pending when updated
+    product.status = 'pending'
+    
+    # Save with retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == max_retries - 1:
+                return jsonify({'error': f'Database error: {str(e)}'}), 500
+            import time
+            time.sleep(0.1 * (attempt + 1))
+    
+    return jsonify({
+        'message': 'Product updated successfully and is pending approval',
+        'id': product.id,
+        'status': product.status
+    })
+
+
+@app.delete('/api/products/<int:product_id>')
+def delete_product(product_id: int):
+    """Delete product (seller only)."""
+    data = request.get_json(silent=True) or {}
+    
+    # Get product
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+    
+    # Verify seller ownership
+    seller_email = data.get('seller_email')
+    if not seller_email:
+        return jsonify({'error': 'seller_email is required'}), 400
+    
+    user = User.query.filter_by(email=seller_email, role='seller').first()
+    if not user or product.seller_id != user.id:
+        return jsonify({'error': 'You can only delete your own products'}), 403
+    
+    # Delete product
+    db.session.delete(product)
+    
+    # Save with retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == max_retries - 1:
+                return jsonify({'error': f'Database error: {str(e)}'}), 500
+            import time
+            time.sleep(0.1 * (attempt + 1))
+    
+    return jsonify({'message': 'Product deleted successfully'})
 
 
 # -----------------------------------------------------------------------------
