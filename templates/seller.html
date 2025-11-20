@@ -7,151 +7,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   
   <style>
-    /* Basic styling for the dashboard */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #fdfdfb;
-      color: #2a2a2a;
-      line-height: 1.6;
-    }
-    header {
-      background-color: #5b3c33;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    .user-info {
-      font-size: 0.9rem;
-    }
-    .logout-btn {
-      background-color: #3e2a22;
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-    .logout-btn:hover {
-      background-color: #2a1a15;
-    }
-    .container {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      padding: 2rem;
-    }
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      color: #5b3c33;
-      text-align: center;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    label {
-      font-weight: 600;
-      color: #5b3c33;
-      margin-bottom: 0.3rem;
-    }
-    input[type="text"], input[type="number"], textarea, input[type="file"] {
-      padding: 0.6rem 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
-      border-color: #5b3c33;
-      outline: none;
-    }
-    textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-    button {
-      background-color: #5b3c33;
-      color: white;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-top: 1rem;
-    }
-    button:hover {
-      background-color: #3e2a22;
-    }
-    .success-message {
-      background-color: #d4edda;
-      color: #155724;
-      padding: 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      display: none;
-    }
+    /* Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #fdfdfb 0%, #faf7f5 60%, #f6f1ee 100%); color: #2a2a2a; line-height: 1.6; }
 
-    /* My Products cards (to prevent oversized images) */
-    #myProducts {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .handicraft-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 0.75rem;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 1rem;
-      background: #fff;
-    }
-    .handicraft-card img {
-      width: 100%;
-      max-width: 200px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    @media (max-width: 480px) {
-      .handicraft-card img { max-width: 160px; height: 120px; }
-    }
+    /* Header */
+    header { position: sticky; top: 0; z-index: 10; background: #5b3c33; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 6px 18px rgba(0,0,0,.12); }
+    header h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; letter-spacing: .5px; }
+    .user-info { display: flex; gap: .75rem; align-items: center; font-size: .95rem; }
+    .logout-btn { background: #3e2a22; color: #fff; padding: .5rem 1rem; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-size: .9rem; transition: transform .15s ease, background .2s ease; }
+    .logout-btn:hover { background: #2a1a15; transform: translateY(-1px); }
+
+    /* Shell */
+    .container { max-width: 980px; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 16px; box-shadow: 0 12px 30px rgba(0,0,0,.08); }
+    h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 2rem; margin-bottom: 1.2rem; color: #5b3c33; text-align: center; }
+
+    /* Form */
+    form { display: flex; flex-direction: column; gap: 1rem; }
+    label { font-weight: 600; color: #5b3c33; margin-bottom: .25rem; }
+    input[type="text"], input[type="number"], textarea, input[type="file"], select { padding: .7rem .85rem; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; background: #fff; transition: border-color .2s ease, box-shadow .2s ease; }
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus { outline: none; border-color: #c6a89a; box-shadow: 0 0 0 4px rgba(91,60,51,.12); }
+    textarea { min-height: 96px; resize: vertical; }
+    button { align-self: start; background: #5b3c33; color: #fff; padding: .8rem 1.2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
+    button:hover { background: #3e2a22; transform: translateY(-1px); box-shadow: 0 10px 18px rgba(62,42,34,.18); }
+
+    .success-message { background: #e8f6ee; color: #155724; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; display: none; border: 1px solid #c7e8d3; }
+
+    /* My Products Grid */
+    #myProducts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; margin-top: 1rem; }
+    .handicraft-card { background:#fff; border:1px solid #eee; border-radius: 14px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.06); transition: transform .2s ease, box-shadow .2s ease; }
+    .handicraft-card:hover { transform: translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,0.10); }
+    .handicraft-card img { width:100%; height:180px; object-fit:cover; display:block; }
+    .handicraft-info { padding: 0.9rem 1rem 1.1rem; }
+    .handicraft-info h4 { margin:0 0 0.4rem; font-family:'Playfair Display', serif; font-weight:700; color:#3b2a23; }
+    .handicraft-info p { margin:0.2rem 0; color:#444; }
+    .status-badge { display:inline-block; margin-left:.4rem; padding:.15rem .5rem; font-size:.8rem; border-radius:999px; background:#f2efe9; color:#6b564e; }
+
+    @media (max-width: 600px) { .container { margin: 1rem; padding: 1.25rem; } }
   </style>
 </head>
 <body>
-  <script src="../static/config.js"></script>
+  <script src="/static/config.js"></script>
   <header>
     <h1>Seller Dashboard</h1>
     <div class="user-info">
       <span id="welcomeMessage">Welcome, Seller!</span>
-      <a href="login.html" class="logout-btn" onclick="logout()">Logout</a>
+      <a href="/login" class="logout-btn" onclick="logout()">Logout</a>
     </div>
   </header>
 
@@ -194,6 +95,15 @@
   </div>
 
   <script>
+    // Safely parse JSON responses; if backend returns HTML error page, show text instead of throwing
+    async function safeParse(res) {
+      const ct = res.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        return await res.json();
+      }
+      const text = await res.text();
+      return { error: text.slice(0, 500) };
+    }
     // Basic auth: ensure only logged-in sellers can access
     function checkAuth() {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -250,7 +160,7 @@
           method: 'POST',
           body: formData
         });
-        const data = await res.json();
+        const data = await safeParse(res);
         if (!res.ok) throw new Error(data.error || 'Failed to add product');
 
         // Show success and reset form

@@ -34,15 +34,30 @@
     .btn { padding:0.5rem 0.75rem; border:none; border-radius:6px; cursor:pointer; }
     .btn-approve { background:#2e7d32; color:#fff; }
     .btn-reject { background:#c62828; color:#fff; }
+    .btn-delete { background:#d32f2f; color:#fff; }
+    .btn-edit { background:#1976d2; color:#fff; }
     .thumb { width:120px; height:90px; object-fit:cover; border-radius:8px; border:1px solid #eee; }
     .topbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; }
     .muted { color:#666; font-size:0.95rem; }
+    
+    /* Tabs */
+    .tabs { display:flex; gap:0; margin-bottom:1rem; }
+    .tab { padding:0.75rem 1.5rem; background:#eee; border:none; cursor:pointer; border-radius:8px 8px 0 0; }
+    .tab.active { background:var(--brown); color:#fff; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    
+    /* Role selector */
+    select { padding:0.5rem; border:1px solid #ccc; border-radius:4px; }
   </style>
 </head>
 <body>
   <header>
     <h1>Admin Panel</h1>
-    <div id="adminInfo" class="muted"></div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div id="adminInfo" class="muted"></div>
+      <button id="logoutBtn" class="btn hidden" style="background:#c62828; padding:0.5rem 1rem;">Logout</button>
+    </div>
   </header>
 
   <div class="container">
@@ -62,27 +77,63 @@
 
     <!-- Moderation Dashboard -->
     <div id="dashboard" class="hidden">
-      <div class="card">
-        <div class="topbar">
-          <h2 style="margin:0; font-family:'Playfair Display', serif;">Pending Products</h2>
-          <button id="refreshBtn" class="btn" style="background:#eee;">Refresh</button>
+      <!-- Tab Navigation -->
+      <div class="tabs">
+        <button class="tab active" data-tab="products">Products</button>
+        <button class="tab" data-tab="users">Users</button>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="products-tab" class="tab-content active">
+        <div class="card">
+          <div class="topbar">
+            <h2 style="margin:0; font-family:'Playfair Display', serif;">Pending Products</h2>
+            <button id="refreshBtn" class="btn" style="background:#eee;">Refresh</button>
+          </div>
+          <div id="pendingEmpty" class="muted" style="margin-top:1rem;">No pending products.</div>
+          <div class="tableWrap">
+            <table id="pendingTable" class="hidden">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Photo</th>
+                  <th>Product</th>
+                  <th>Seller</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
-        <div id="pendingEmpty" class="muted" style="margin-top:1rem;">No pending products.</div>
-        <div class="tableWrap">
-          <table id="pendingTable" class="hidden">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Photo</th>
-                <th>Product</th>
-                <th>Seller</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+      </div>
+
+      <!-- Users Tab -->
+      <div id="users-tab" class="tab-content">
+        <div class="card">
+          <div class="topbar">
+            <h2 style="margin:0; font-family:'Playfair Display', serif;">User Management</h2>
+            <button id="refreshUsersBtn" class="btn" style="background:#eee;">Refresh</button>
+          </div>
+          <div id="usersEmpty" class="muted" style="margin-top:1rem;">No users found.</div>
+          <div class="tableWrap">
+            <table id="usersTable" class="hidden">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Phone</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -99,6 +150,7 @@
       document.getElementById('loginCard').classList.remove('hidden');
       document.getElementById('dashboard').classList.add('hidden');
       document.getElementById('adminInfo').textContent = '';
+      document.getElementById('logoutBtn').classList.add('hidden');
     }
 
     function showDashboard() {
@@ -107,6 +159,25 @@
       const email = localStorage.getItem('userEmail') || '';
       const name = localStorage.getItem('userName') || 'Admin';
       document.getElementById('adminInfo').textContent = `Logged in as ${name} (${email})`;
+      document.getElementById('logoutBtn').classList.remove('hidden');
+    }
+
+    function logout() {
+      // Clear all stored login data
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('adminToken');
+      
+      // Show login form
+      showLogin();
+      
+      // Clear form
+      document.getElementById('adminEmail').value = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('adminLoginError').textContent = '';
     }
 
     // Admin login handler (uses existing /api/login with role check)
@@ -121,7 +192,8 @@
         fd.append('email', email);
         fd.append('password', password);
         fd.append('role', 'admin');
-        const res = await fetch('/api/login', { method: 'POST', body: fd });
+        const base = (typeof API_BASE !== 'undefined') ? API_BASE : '';
+        const res = await fetch(base + '/api/login', { method: 'POST', body: fd });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Login failed');
         const u = data.user;
@@ -202,16 +274,156 @@
     }
 
     document.getElementById('refreshBtn').addEventListener('click', loadPending);
+    document.getElementById('refreshUsersBtn').addEventListener('click', loadUsers);
 
-    // Delegate approve/reject button clicks
+    // Tab switching
     document.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-action]');
-      if (!btn) return;
-      if (!isAdmin()) { alert('Admin access required'); return; }
-      const id = btn.getAttribute('data-id');
-      const action = btn.getAttribute('data-action');
-      updateStatus(id, action);
+      if (e.target.classList.contains('tab')) {
+        const tabName = e.target.getAttribute('data-tab');
+        
+        // Update tab buttons
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        
+        // Load data for the active tab
+        if (tabName === 'users') {
+          loadUsers();
+        } else if (tabName === 'products') {
+          loadPending();
+        }
+      }
     });
+
+    // Load users function
+    async function loadUsers() {
+      const table = document.getElementById('usersTable');
+      const tbody = table.querySelector('tbody');
+      const empty = document.getElementById('usersEmpty');
+      tbody.innerHTML = '';
+      
+      try {
+        const token = localStorage.getItem('adminToken') || '';
+        const base = (typeof API_BASE !== 'undefined') ? API_BASE : '';
+        const res = await fetch(base + '/api/users', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        const users = await res.json();
+        
+        if (!Array.isArray(users) || users.length === 0) {
+          table.classList.add('hidden');
+          empty.classList.remove('hidden');
+          return;
+        }
+        
+        table.classList.remove('hidden');
+        empty.classList.add('hidden');
+        
+        for (const u of users) {
+          const tr = document.createElement('tr');
+          const createdDate = new Date(u.created_at).toLocaleDateString();
+          tr.innerHTML = `
+            <td>${u.id}</td>
+            <td>${u.fullname}</td>
+            <td>${u.email}</td>
+            <td>
+              <select class="role-select" data-user-id="${u.id}" data-current-role="${u.role}">
+                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                <option value="seller" ${u.role === 'seller' ? 'selected' : ''}>Seller</option>
+                <option value="buyer" ${u.role === 'buyer' ? 'selected' : ''}>Buyer</option>
+              </select>
+            </td>
+            <td>${u.phone || 'N/A'}</td>
+            <td>${createdDate}</td>
+            <td class="actions">
+              <button class="btn btn-edit" data-user-id="${u.id}" data-action="save-role">Save Role</button>
+              <button class="btn btn-delete" data-user-id="${u.id}" data-action="delete-user">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      } catch (e) {
+        console.error('Error loading users:', e);
+        empty.textContent = 'Error loading users';
+        empty.classList.remove('hidden');
+        table.classList.add('hidden');
+      }
+    }
+
+    // Handle user actions
+    async function handleUserAction(userId, action, newRole = null) {
+      try {
+        const token = localStorage.getItem('adminToken') || '';
+        const base = (typeof API_BASE !== 'undefined') ? API_BASE : '';
+        
+        if (action === 'save-role' && newRole) {
+          const res = await fetch(base + `/api/users/${userId}/role`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({ role: newRole })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to update role');
+          alert('Role updated successfully');
+          await loadUsers();
+        } else if (action === 'delete-user') {
+          if (!confirm('Are you sure you want to delete this user?')) return;
+          const res = await fetch(base + `/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to delete user');
+          alert('User deleted successfully');
+          await loadUsers();
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    // Delegate user management button clicks
+    document.addEventListener('click', (e) => {
+      // Handle product actions
+      const productBtn = e.target.closest('button[data-action="approved"], button[data-action="rejected"]');
+      if (productBtn) {
+        if (!isAdmin()) { alert('Admin access required'); return; }
+        const id = productBtn.getAttribute('data-id');
+        const action = productBtn.getAttribute('data-action');
+        updateStatus(id, action);
+        return;
+      }
+      
+      // Handle user actions
+      const userBtn = e.target.closest('button[data-user-id]');
+      if (userBtn) {
+        if (!isAdmin()) { alert('Admin access required'); return; }
+        const userId = userBtn.getAttribute('data-user-id');
+        const action = userBtn.getAttribute('data-action');
+        
+        if (action === 'save-role') {
+          const select = document.querySelector(`select[data-user-id="${userId}"]`);
+          const newRole = select.value;
+          const currentRole = select.getAttribute('data-current-role');
+          if (newRole !== currentRole) {
+            handleUserAction(userId, action, newRole);
+          } else {
+            alert('No changes to save');
+          }
+        } else if (action === 'delete-user') {
+          handleUserAction(userId, action);
+        }
+      }
+    });
+
+    // Logout button handler
+    document.getElementById('logoutBtn').addEventListener('click', logout);
 
     // Gate the dashboard on load
     window.addEventListener('load', async () => {

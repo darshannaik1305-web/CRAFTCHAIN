@@ -15,6 +15,16 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 # -----------------------------------------------------------------------------
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DB_PATH = os.path.join(BASE_DIR, 'app.db')
+
+# Check if there's a custom database path (from ULTIMATE FIX)
+custom_db_path = os.path.join(BASE_DIR, 'database_path.txt')
+if os.path.exists(custom_db_path):
+    try:
+        with open(custom_db_path, 'r') as f:
+            DB_PATH = f.read().strip()
+        print(f"Using custom database path: {DB_PATH}")
+    except Exception:
+        print("Could not read custom database path, using default")
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 UPLOAD_DIR = os.path.join(STATIC_DIR, 'uploads')
@@ -29,11 +39,42 @@ os.makedirs(PRODUCT_UPLOAD_DIR, exist_ok=True)
 app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/static')
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+# Give SQLite more time to wait on locks before failing
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'connect_args': {
+        # seconds to wait if the database is locked
+        'timeout': 5
+    }
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB file uploads
 app.config['SECRET_KEY'] = app.config.get('SECRET_KEY') or 'dev-secret-change-me'
 
 db = SQLAlchemy(app)
+
+# Set pragmatic SQLite options to reduce locking during writes
+def configure_sqlite():
+    """Configure SQLite for better concurrency and reduced locking."""
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            # Enable WAL journal mode (better concurrency)
+            conn.execute(text("PRAGMA journal_mode=WAL"))
+            # Set busy timeout to 30 seconds
+            conn.execute(text("PRAGMA busy_timeout=30000"))
+            # Enable foreign key constraints
+            conn.execute(text("PRAGMA foreign_keys=ON"))
+            # Optimize for better performance
+            conn.execute(text("PRAGMA synchronous=NORMAL"))
+            conn.execute(text("PRAGMA cache_size=10000"))
+            conn.execute(text("PRAGMA temp_store=MEMORY"))
+            conn.commit()
+    except Exception as e:
+        print(f"Warning: Could not configure SQLite: {e}")
+
+# Configure SQLite when app starts
+with app.app_context():
+    configure_sqlite()
 
 # -----------------------------------------------------------------------------
 # Models
@@ -132,9 +173,32 @@ def ensure_category_column():
 # -----------------------------------------------------------------------------
 @app.cli.command('init-db')
 def init_db_cmd():
-    db.create_all()
-    ensure_category_column()
-    print('Database initialized at', DB_PATH)
+    try:
+        db.create_all()
+        ensure_category_column()
+        print('Database initialized at', DB_PATH)
+    except Exception as e:
+        print(f'Database initialization failed: {e}')
+        print('Trying to fix database...')
+        
+        # Try to fix database by recreating it
+        import os
+        for suffix in ['-wal', '-shm', '-journal']:
+            file_path = DB_PATH + suffix
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                    print(f'Removed lock file: {file_path}')
+                except Exception:
+                    pass
+        
+        # Retry initialization
+        try:
+            db.create_all()
+            ensure_category_column()
+            print('Database initialized successfully after fix')
+        except Exception as e2:
+            print(f'Database initialization still failed: {e2}')
 
 
 @app.cli.command('create-admin')
@@ -180,8 +244,21 @@ def register_buyer():
         role='buyer',
         password_hash=hash_password(data['password'])
     )
-    db.session.add(user)
-    db.session.commit()
+    
+    # Retry logic for database operations to handle locks
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            db.session.add(user)
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == max_retries - 1:
+                return jsonify({'error': f'Registration failed: {str(e)}'}), 500
+            import time
+            time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+    
     return jsonify({'message': 'Buyer registered successfully'}), 201
 
 
@@ -214,8 +291,21 @@ def register_seller():
         password_hash=hash_password(data['password']),
         govt_id_path=govt_path,
     )
-    db.session.add(user)
-    db.session.commit()
+    
+    # Retry logic for database operations to handle locks
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            db.session.add(user)
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == max_retries - 1:
+                return jsonify({'error': f'Registration failed: {str(e)}'}), 500
+            import time
+            time.sleep(0.1 * (attempt + 1))  # Exponential backoff
+    
     return jsonify({'message': 'Seller registered successfully'}), 201
 
 
@@ -278,6 +368,12 @@ def create_product():
     except ValueError:
         return jsonify({'error': 'Invalid price'}), 400
 
+    # Normalize and validate category
+    normalized_category = (data.get('category') or '').strip().lower()
+    allowed_categories = {'pots', 'wood', 'metal'}
+    if normalized_category not in allowed_categories:
+        return jsonify({'error': 'Invalid category. Must be one of pots, wood, metal'}), 400
+
     product = Product(
         seller_id=user.id,
         seller_name=data['seller_name'],
@@ -285,11 +381,23 @@ def create_product():
         price=price,
         description=data['description'],
         image_path=image_path,
-        category=data.get('category'),
+        category=normalized_category,
         status='pending'
     )
-    db.session.add(product)
-    db.session.commit()
+    
+    # Retry logic for database operations to handle locks
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            db.session.add(product)
+            db.session.commit()
+            break
+        except Exception as e:
+            db.session.rollback()
+            if attempt == max_retries - 1:
+                return jsonify({'error': f'Database error: {str(e)}'}), 500
+            import time
+            time.sleep(0.1 * (attempt + 1))  # Exponential backoff
 
     return jsonify({'message': 'Product submitted for approval', 'id': product.id, 'status': product.status}), 201
 
@@ -309,7 +417,8 @@ def list_products():
                 return jsonify({'error': 'Admin authorization required'}), 401
         query = query.filter_by(status=status)
     if category:
-        query = query.filter_by(category=category)
+        normalized_category = category.strip().lower()
+        query = query.filter_by(category=normalized_category)
     products = query.order_by(Product.created_at.desc()).all()
     return jsonify([
         {
@@ -396,6 +505,81 @@ def my_products():
 
 
 # -----------------------------------------------------------------------------
+# User management routes (admin only)
+# -----------------------------------------------------------------------------
+@app.get('/api/users')
+def list_users():
+    # Require admin token
+    auth = request.headers.get('Authorization', '')
+    token = auth.replace('Bearer ', '') if auth.startswith('Bearer ') else request.headers.get('X-Admin-Token')
+    admin_id = verify_admin_token(token) if token else None
+    if not admin_id:
+        return jsonify({'error': 'Admin authorization required'}), 401
+
+    users = User.query.order_by(User.created_at.desc()).all()
+    return jsonify([
+        {
+            'id': u.id,
+            'fullname': u.fullname,
+            'email': u.email,
+            'role': u.role,
+            'phone': u.phone,
+            'address': u.address,
+            'created_at': u.created_at.isoformat() if u.created_at else None
+        }
+        for u in users
+    ])
+
+
+@app.patch('/api/users/<int:user_id>/role')
+def update_user_role(user_id: int):
+    # Require admin token
+    auth = request.headers.get('Authorization', '')
+    token = auth.replace('Bearer ', '') if auth.startswith('Bearer ') else request.headers.get('X-Admin-Token')
+    admin_id = verify_admin_token(token) if token else None
+    if not admin_id:
+        return jsonify({'error': 'Admin authorization required'}), 401
+
+    data = request.get_json(silent=True) or {}
+    new_role = data.get('role')
+    if new_role not in {'admin', 'seller', 'buyer'}:
+        return jsonify({'error': 'Invalid role'}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user.role = new_role
+    db.session.commit()
+    return jsonify({'message': 'Role updated', 'id': user.id, 'role': user.role})
+
+
+@app.delete('/api/users/<int:user_id>')
+def delete_user(user_id: int):
+    # Require admin token
+    auth = request.headers.get('Authorization', '')
+    token = auth.replace('Bearer ', '') if auth.startswith('Bearer ') else request.headers.get('X-Admin-Token')
+    admin_id = verify_admin_token(token) if token else None
+    if not admin_id:
+        return jsonify({'error': 'Admin authorization required'}), 401
+
+    # Prevent deleting yourself
+    if admin_id == user_id:
+        return jsonify({'error': 'Cannot delete your own account'}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Delete associated products first
+    Product.query.filter_by(seller_id=user_id).delete()
+    
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully'})
+
+
+# -----------------------------------------------------------------------------
 # Static files helper (optional convenience)
 # -----------------------------------------------------------------------------
 @app.get('/static/uploads/<path:filename>')
@@ -467,6 +651,7 @@ def serve_logos(filename):
 
 if __name__ == '__main__':
     with app.app_context():
+        
         db.create_all()
         ensure_category_column()
     port = int(os.environ.get('PORT', 5002))

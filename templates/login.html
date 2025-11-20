@@ -153,7 +153,8 @@ body::before {
         formData.append('password', password);
         formData.append('role', role);
 
-        const res = await fetch('/api/login', {
+        const base = (typeof API_BASE !== 'undefined') ? API_BASE : '';
+        const res = await fetch(base + '/api/login', {
           method: 'POST',
           body: formData
         });

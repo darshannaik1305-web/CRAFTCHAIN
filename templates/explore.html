@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explore Handicrafts - Craft Chain</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/style1.css">
-  <script src="../static/config.js"></script>
+  <link rel="stylesheet" href="/static/style1.css">
+  <script src="/static/config.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -16,7 +16,7 @@
 <nav>
   <a href="#">Home</a>
   <a href="#our-story">About</a> <!-- 👈 Smooth scroll to Our Story -->
-  <a href="#">Contact</a>
+  <a href="#footer">Contact</a>
   <a href="/login" class="login-btn">Login</a>
 </nav>
 </header>
@@ -33,31 +33,31 @@
     <h3>Check this out !!</h3>
 
     <!-- Pots -->
-    <div class="handicraft-card">
-      <img src="../pics/pottery.jpg" alt="Pots">
+    <a class="handicraft-card" href="/pots" style="text-decoration:none;color:inherit;display:block;">
+      <img src="/pics/pottery.jpg" alt="Pots">
       <div class="handicraft-info">
-        <h4><a href="pots.html">Pots & Terracotta</a></h4>
+        <h4>Pots & Terracotta</h4>
         <p>Clay pots and terracotta crafts that celebrate India’s earthy traditions.</p>
       </div>
-    </div>
+    </a>
     
     <!-- Wooden Crafts -->
-    <div class="handicraft-card">
-      <img src="../pics/wodden.jpg" alt="Wooden Crafts">
+    <a class="handicraft-card" href="/wood" style="text-decoration:none;color:inherit;display:block;">
+      <img src="/pics/wodden.jpg" alt="Wooden Crafts">
       <div class="handicraft-info">
-        <h4><a href="wood.html">Wooden Crafts</a></h4>
+        <h4>Wooden Crafts</h4>
         <p>Intricately carved wooden pieces blending tradition with utility.</p>
       </div>
-    </div>
+    </a>
 
     <!-- Metal Work -->
-    <div class="handicraft-card">
-      <img src="../pics/metal.jpg" alt="Metal Work">
+    <a class="handicraft-card" href="/metal" style="text-decoration:none;color:inherit;display:block;">
+      <img src="/pics/metal.jpg" alt="Metal Work">
       <div class="handicraft-info">
-        <h4><a href="metal.html">Metal Work</a></h4>
+        <h4>Metal Work</h4>
         <p>Handmade brass, copper, and silver crafts that shine with heritage.</p>
       </div>
-    </div>
+    </a>
   </section>
 
    <!-- Our Story -->
@@ -83,18 +83,20 @@ When you purchase from Craft Chain,<br> you're not just buying a beautiful objec
   </section>
 
   <!-- Footer -->
- <footer>
+ <footer id="footer">
     <div class="footer-content">
       <div class="footer-left">
         <h4>Contact Us</h4>
         <div class="contact-info">
-          <p class="email">📧 info@craftchain.com</p>
+          <p class="email">📧 carftchain18@gmail.com</p>
+           <p class ="address" id = "no"> +91 9353129512 </p>
           <p class="address">📍 Bangalore, India</p>
         </div>
-        <p class="copyright">© 2025 Craft Chain | Handcrafted Shoes</p>
+        <p class="copyright">© 2025 Craft Chain | Handmade products</p>
       </div>
       <div class="footer-right">
         <h4>Connect with Us</h4>
+      
           <div class="social-links">
             <a href="#" class="social-link instagram" title="Instagram">
               <img src="../logos/—Pngtree—instagram white icon instagram instagram_3570419.png " alt="Instagram">

@@ -5,41 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pots & Terracotta - Craft Chain</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/style1.css">
+  <link rel="stylesheet" href="/static/style1.css">
   <style>
+    .page-hero { text-align:center; padding: 1rem 0 0.5rem; }
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1.2rem; }
+    .handicraft-card { background:#fff; border:1px solid #eee; border-radius:14px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.06); transition: transform .2s ease, box-shadow .2s ease; }
+    .handicraft-card:hover { transform: translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,0.10); }
+    .handicraft-card img { width:100%; height:200px; object-fit:cover; display:block; }
+    .handicraft-info { padding: 0.9rem 1rem 1.1rem; }
+    .handicraft-info h4 { margin:0 0 0.4rem; font-family:'Playfair Display', serif; font-weight:700; color:#3b2a23; }
+    .handicraft-info p { margin:0.2rem 0; color:#444; }
+    .muted { color:#777; }
+    .empty { text-align:center; color:#666; margin-top: 1rem; }
+    .skeleton { background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%); background-size: 400% 100%; animation: shimmer 1.4s infinite; height: 200px; border-radius: 12px; }
+    @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
   </style>
 </head>
 <body>
   <header>
     <h1>CRAFT CHAIN</h1>
     <nav>
-      <a href="explore.html">Back to Explore</a>
+      <a href="/explore">Back to Explore</a>
     </nav>
   </header>
 
   <section class="handicrafts">
-    <h3>Pots & Terracotta</h3>
+    <div class="page-hero">
+      <h3>Pots & Terracotta</h3>
+      <p class="muted">Approved pots and terracotta products from our artisans.</p>
+    </div>
     <div id="productsContainer" class="products-grid"></div>
   </section>
 
-  <script src="../static/config.js"></script>
+  <script src="/static/config.js"></script>
   <script>
     async function loadCategory() {
       try {
-        const res = await fetch(`${API_BASE}/api/products?status=approved&category=pots`);
+        // Same-origin endpoint to avoid any origin issues
+        const res = await fetch('/api/products?status=approved&category=pots');
         const items = await res.json();
         const container = document.getElementById('productsContainer');
         container.innerHTML = '';
         if (!Array.isArray(items) || items.length === 0) {
-          container.innerHTML = '<p>No approved products in this category yet.</p>';
+          container.innerHTML = '<p class="empty">No approved products in this category yet.</p>';
           return;
         }
-        const host = API_BASE;
+        const host = '';
         for (const p of items) {
           const card = document.createElement('div');
           card.className = 'handicraft-card';
-          const img = p.image_url.startsWith('http') ? p.image_url : host + p.image_url;
+          const img = p.image_url && p.image_url.startsWith('http') ? p.image_url : host + (p.image_url || '');
           card.innerHTML = `
             <img src="${img}" alt="${p.name}">
             <div class="handicraft-info">

@@ -400,3 +400,10 @@ footer {
     height: 150px;
   }
 }
+#no{
+  color: #ccc;
+  margin: 0;
+  font-size: 0.9rem;
+  
+}
+
